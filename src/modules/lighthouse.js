@@ -81,7 +81,15 @@ async function runDeepScan(domain) {
         const lighthouse = (await import('lighthouse')).default;
 
         chrome = await chromeLauncher.launch({
-            chromeFlags: ['--headless=new', '--no-sandbox', '--disable-gpu', '--disable-dev-shm-usage'],
+            chromeFlags: [
+                '--headless=new',
+                '--no-sandbox',
+                '--disable-gpu',
+                '--disable-dev-shm-usage',
+                '--disable-setuid-sandbox',
+                '--disable-software-rasterizer',
+                '--no-zygote'
+            ],
             chromePath: process.env.PUPPETEER_EXECUTABLE_PATH || undefined
         });
 
