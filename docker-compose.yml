@@ -4,9 +4,7 @@ networks:
 
 services:
   scan-web:
-    build:
-      context: .
-      target: web
+    image: ghcr.io/buildplan/audit-service:latest
     container_name: scan-web
     command: node src/server.js
     ports:
@@ -28,16 +26,13 @@ services:
         max-file: "3"
 
   scan-worker:
-    build:
-      context: .
-      target: worker
+    image: ghcr.io/buildplan/audit-service:latest
     container_name: scan-worker
-    command: node src/worker.js
     networks:
       - scan-net
     environment:
       - REDIS_HOST=valkey
-      - PUPPETEER_EXECUTABLE_PATH=/usr/bin/google-chrome
+      - PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium
       - LOG_LEVEL=info
     shm_size: '1gb'
     depends_on:
