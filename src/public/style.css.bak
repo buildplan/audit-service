@@ -26,29 +26,3 @@ body { font-family: 'Inter', sans-serif; }
 .terminal-scroll::-webkit-scrollbar { width: 6px; }
 .terminal-scroll::-webkit-scrollbar-track { background: #0f172a; }
 .terminal-scroll::-webkit-scrollbar-thumb { background: #334155; border-radius: 3px; }
-
-/* Button States */
-button:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-}
-
-/* Fade In Animation */
-.fade-in {
-    animation: fadeIn 0.3s ease-in;
-}
-
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-
-/* Error Message Animation */
-#errorMsg:not(.hidden) {
-    animation: slideDown 0.3s ease-out;
-}
-
-@keyframes slideDown {
-    from { opacity: 0; transform: translateY(-10px); }
-    to { opacity: 1; transform: translateY(0); }
-}
