@@ -1,5 +1,8 @@
 # Dependencies
 node_modules/
+**/*.swp
+**/*.swo
+.git
 
 # Environment Secrets
 .env

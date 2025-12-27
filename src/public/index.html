@@ -457,10 +457,17 @@
             renderGauge('seoGauge', data.seo, document.getElementById('seoScore'));
 
             const techList = document.getElementById('techStackList');
+
             techList.innerHTML = '';
             if(data.tech && data.tech.length > 0) {
                 data.tech.forEach(t => {
-                    techList.innerHTML += `<span class="px-2 py-1 rounded-md bg-slate-800 border border-slate-700 text-xs text-slate-300 font-mono">${t.name}</span>`;
+                    const cssClass = t.isLegacy ? "bg-yellow-900/30 border-yellow-700/50 text-yellow-500" : "bg-slate-800 border-slate-700 text-slate-300";
+                    const tooltip = t.isLegacy ? "title='This technology was detected by ID only. Click for more info.'" : "";
+                    techList.innerHTML += `
+                        <span ${tooltip} onclick="${t.isLegacy ? "alert('This ID represents a proprietary technology or infrastructure detected by our 2025 signatures that does not yet have a public label in the legacy engine.')" : ""}" 
+                            class="px-2 py-1 rounded-md border text-xs font-mono cursor-pointer ${cssClass}">
+                            ${t.name}
+                        </span>`;
                 });
             } else {
                 techList.innerHTML = `<span class="text-slate-500 text-xs">No specific technologies detected.</span>`;
