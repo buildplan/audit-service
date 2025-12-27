@@ -1,10 +1,18 @@
+networks:
+  scan-net:
+    driver: bridge
+
 services:
   scan-web:
-    build: .
+    build:
+      context: .
+      target: web
     container_name: scan-web
     command: node src/server.js
     ports:
       - "127.0.0.1:8080:3000"
+    networks:
+      - scan-net
     environment:
       - REDIS_HOST=valkey
       - LOG_LEVEL=info
@@ -12,6 +20,12 @@ services:
     depends_on:
       valkey:
         condition: service_healthy
+    restart: unless-stopped
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
 
   scan-worker:
     build:
@@ -19,6 +33,8 @@ services:
       target: worker
     container_name: scan-worker
     command: node src/worker.js
+    networks:
+      - scan-net
     environment:
       - REDIS_HOST=valkey
       - PUPPETEER_EXECUTABLE_PATH=/usr/bin/google-chrome
@@ -27,11 +43,20 @@ services:
     depends_on:
       valkey:
         condition: service_healthy
+    restart: unless-stopped
+    stop_grace_period: 30s
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
 
   valkey:
     image: valkey/valkey:alpine
     container_name: valkey
-    restart: always
+    restart: unless-stopped
+    networks:
+      - scan-net
     volumes:
       - ./valkey_data:/data
     healthcheck:
@@ -39,3 +64,8 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
