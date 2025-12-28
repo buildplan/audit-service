@@ -37,7 +37,7 @@ services:
       - scan-net
     environment:
       - REDIS_HOST=valkey
-      - PUPPETEER_EXECUTABLE_PATH=/usr/bin/google-chrome
+      - PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium
       - LOG_LEVEL=info
     shm_size: '1gb'
     depends_on:
