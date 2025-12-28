@@ -1,4 +1,3 @@
-document.getElementById("year").innerText = new Date().getFullYear();
 let pollInterval;
 let currentData = {};
 let currentDomain = '';
