@@ -52,6 +52,8 @@ function disableScanButton(text = 'Scanning...') {
 // ============================================
 
 async function startScan() {
+    if (pollInterval) clearInterval(pollInterval);
+
     let domain = document.getElementById('domainInput').value.trim();
 
     if (!domain) {
@@ -99,7 +101,7 @@ async function startScan() {
         const data = await res.json();
         if (data.error) throw new Error(data.error);
 
-        if (!data.tier1 || !data.id) {
+        if (!data.tier1) {
             throw new Error('Invalid response from server');
         }
 
@@ -111,11 +113,9 @@ async function startScan() {
 
         document.getElementById('deepScanSection').classList.remove('hidden');
 
-        disableScanButton('Deep Scanning...');
-
+        disableScanButton('Deep Scanning...'); 
+        
         enableScanButton();
-
-        setupDeepScan(domain, data.id);
 
     } catch (err) {
         document.getElementById('loadingSection').classList.add('hidden');
