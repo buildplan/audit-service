@@ -15,6 +15,8 @@ node_modules/
 valkey_data/
 redis_data/
 dump.rdb
+caddy/
+crowdsec/
 
 # Production Docker-compose
 docker-compose-prod.yml

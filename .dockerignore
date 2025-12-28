@@ -33,6 +33,8 @@ Thumbs.db
 valkey_data
 redis_data
 dump.rdb
+crowdsec
+caddy
 
 # Documentation & Tests
 README.md
