@@ -52,6 +52,7 @@ function disableScanButton(text = 'Scanning...') {
 // ============================================
 
 async function startScan() {
+    // 1. Clear any previous deep scan polling
     if (pollInterval) clearInterval(pollInterval);
 
     let domain = document.getElementById('domainInput').value.trim();
@@ -72,8 +73,11 @@ async function startScan() {
 
     disableScanButton('loading');
 
+    // Reset UI
     document.getElementById('loadingSection').classList.remove('hidden');
     document.getElementById('resultsArea').classList.add('hidden');
+
+    // Reset Deep Scan UI
     document.getElementById('deepScanSection').classList.add('hidden');
     document.getElementById('deepScanOption').classList.remove('hidden');
     document.getElementById('tier2Loading').classList.add('hidden');
@@ -112,8 +116,6 @@ async function startScan() {
         document.getElementById('resultsArea').classList.remove('hidden');
 
         document.getElementById('deepScanSection').classList.remove('hidden');
-
-        disableScanButton('Deep Scanning...');
 
         enableScanButton();
 
@@ -165,8 +167,7 @@ async function triggerDeepScan() {
 }
 
 function setupDeepScan(domain, scanId) {
-    document.getElementById('deepScanStatus').innerText = 'Running...';
-    document.getElementById('deepScanStatus').className = "px-2 py-1 rounded text-xs font-bold bg-blue-500/20 text-blue-400 border border-blue-500/20 animate-pulse";
+
     document.getElementById('tier2Loading').classList.remove('hidden');
     document.getElementById('tier2Results').classList.add('hidden');
     document.getElementById('screenshotContainer').classList.add('hidden');
@@ -242,8 +243,6 @@ async function pollDeepScan(id) {
 
         if (ticks > maxTicks) {
             clearInterval(pollInterval);
-            document.getElementById('deepScanStatus').innerText = 'Timeout';
-            document.getElementById('deepScanStatus').className = "px-2 py-1 rounded text-xs font-bold bg-red-500/20 text-red-400 border border-red-500/20";
             document.getElementById('tier2Loading').innerHTML = `<div class="text-red-400 p-4">Deep scan timed out. Tier 1 results are still valid.</div>`;
             enableScanButton();
             return;
@@ -267,8 +266,6 @@ async function pollDeepScan(id) {
                 }, 500);
             } else if (job.state === 'failed') {
                 clearInterval(pollInterval);
-                document.getElementById('deepScanStatus').innerText = 'Failed';
-                document.getElementById('deepScanStatus').className = "px-2 py-1 rounded text-xs font-bold bg-red-500/20 text-red-400 border border-red-500/20";
                 const errorMsg = job.error ? escapeHtml(job.error) : 'Unknown error';
                 document.getElementById('tier2Loading').innerHTML = `<div class="text-red-400 p-4">Scan Failed: ${errorMsg}</div>`;
                 enableScanButton();
@@ -284,8 +281,6 @@ async function pollDeepScan(id) {
 // ============================================
 
 function renderTier2(data) {
-    document.getElementById('deepScanStatus').innerText = 'Complete';
-    document.getElementById('deepScanStatus').className = "px-2 py-1 rounded text-xs font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/20";
 
     document.getElementById('tier2Loading').classList.add('hidden');
     document.getElementById('tier2Results').classList.remove('hidden');
