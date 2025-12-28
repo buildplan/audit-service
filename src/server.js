@@ -18,16 +18,18 @@ const app = express();
 app.set('trust proxy', 'loopback, linklocal, uniquelocal');
 
 // [SECURITY] Restrict CORS
-const allowedOrigins = process.env.CORS_ORIGIN
-    ? process.env.CORS_ORIGIN.split(',')
-    : ['https://audit.wiredalter.com'];
-
+const rawOrigins = process.env.CORS_ORIGIN || '';
+const allowedOrigins = rawOrigins.split(',').map(o => o.trim()).filter(o => o);
+const allowAll = allowedOrigins.includes('*');
+logger.info(`[SECURITY] CORS Policy: ${allowAll ? 'Allow All (*)' : 'Strict Whitelist'}`);
+if (!allowAll) logger.info(`[SECURITY] Whitelisted Origins: ${JSON.stringify(allowedOrigins)}`);
 app.use(cors({
     origin: (origin, callback) => {
         if (!origin) return callback(null, true);
-        if (allowedOrigins.indexOf(origin) !== -1) {
+        if (allowAll || allowedOrigins.indexOf(origin) !== -1) {
             callback(null, true);
         } else {
+            logger.warn(`[CORS BLOCKED] Origin: '${origin}' is not in the whitelist.`);
             callback(new Error('Not allowed by CORS'));
         }
     }
