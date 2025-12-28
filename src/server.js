@@ -15,8 +15,10 @@ const { checkDNS } = require('./modules/dns');
 
 const app = express();
 
+app.set('trust proxy', 'loopback, linklocal, uniquelocal');
+
 // [SECURITY] Restrict CORS in production (Optional: replace '*' with your actual domain)
-app.use(cors({ origin: process.env.CORS_ORIGIN || '*' }));
+app.use(cors({ origin: process.env.CORS_ORIGIN || 'https://audit.wiredalter.com' }));
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
@@ -24,7 +26,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 const limiter = rateLimit({
     windowMs: 1 * 60 * 1000,
     max: 5,
-    message: { 
+    message: {
         error: 'Too many requests.',
         message: 'To protect our free infrastructure, we limit request frequency.'
     }
