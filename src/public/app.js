@@ -75,6 +75,7 @@ async function startScan() {
     // Reset UI
     document.getElementById('loadingSection').classList.remove('hidden');
     document.getElementById('resultsArea').classList.add('hidden');
+    document.getElementById('errorMsg').classList.add('hidden');
 
     // Reset Deep Scan UI
     document.getElementById('deepScanSection').classList.add('hidden');
@@ -174,6 +175,7 @@ function setupDeepScan(domain, scanId) {
     document.getElementById('screenshotLink').href = `https://${escapeHtml(domain)}`;
 
     const terminal = document.getElementById('scanTerminal');
+    // Keeping terminal text colors standard for code clarity
     terminal.innerHTML = `
         <div class="text-slate-500 mb-1">$ init wiredalter-scanner --deep --target=${escapeHtml(domain)}</div>
         <div class="text-blue-400 mb-1">&gt; Spawning Headless Chrome... [OK]</div>
@@ -190,28 +192,28 @@ function renderTier1(data) {
     const sslEl = document.getElementById('sslStatus');
     const sslDet = document.getElementById('sslDetail');
     if (data.ssl.valid) {
-        sslEl.innerHTML = `<span class="text-emerald-400">Valid</span>`;
+        sslEl.innerHTML = `<span class="text-emerald-600 dark:text-emerald-400">Valid</span>`;
         sslDet.textContent = `Expires in ${data.ssl.daysRemaining} days`;
     } else {
-        sslEl.innerHTML = `<span class="text-red-400">Invalid</span>`;
+        sslEl.innerHTML = `<span class="text-red-600 dark:text-red-400">Invalid</span>`;
         sslDet.textContent = data.ssl.error || 'Certificate Error';
     }
 
     const gradeEl = document.getElementById('headerGrade');
     gradeEl.textContent = data.headers.grade;
-    gradeEl.className = `text-4xl font-bold ${data.headers.grade === 'A' ? 'text-emerald-400' : (data.headers.grade === 'F' ? 'text-red-500' : 'text-yellow-400')}`;
+    gradeEl.className = `text-4xl font-bold ${data.headers.grade === 'A' ? 'text-emerald-600 dark:text-emerald-400' : (data.headers.grade === 'F' ? 'text-red-600 dark:text-red-500' : 'text-yellow-600 dark:text-yellow-400')}`;
     document.getElementById('headerServer').textContent = data.headers.server;
 
     const portsEl = document.getElementById('portsStatus');
     if (data.ports.open && data.ports.open.length > 0) {
-        portsEl.innerHTML = `<span class="text-yellow-400">${data.ports.open.length} Ports Open</span>`;
+        portsEl.innerHTML = `<span class="text-yellow-600 dark:text-yellow-400">${data.ports.open.length} Ports Open</span>`;
     } else {
-        portsEl.innerHTML = `<span class="text-emerald-400">All Common Closed</span>`;
+        portsEl.innerHTML = `<span class="text-emerald-600 dark:text-emerald-400">All Common Closed</span>`;
     }
 
     document.getElementById('carbonAmount').textContent = `${data.carbon.co2}g`;
     document.getElementById('carbonGreen').innerHTML = data.carbon.green ?
-        `<span class="text-emerald-400">🌱 Green Hosting</span>` :
+        `<span class="text-emerald-600 dark:text-emerald-400">🌱 Green Hosting</span>` :
         `<span class="text-slate-500">Standard Hosting</span>`;
 }
 
@@ -222,7 +224,7 @@ function renderTier1(data) {
 function addTerminalLog(msg) {
     const terminal = document.getElementById('scanTerminal');
     const logLine = document.createElement('div');
-    logLine.className = 'text-emerald-400 mb-1';
+    logLine.className = 'text-emerald-400 mb-1'; // Keep terminal distinct
     logLine.textContent = `> ${msg}`;
     terminal.appendChild(logLine);
     terminal.scrollTop = terminal.scrollHeight;
@@ -242,7 +244,7 @@ async function pollDeepScan(id) {
 
         if (ticks > maxTicks) {
             clearInterval(pollInterval);
-            document.getElementById('tier2Loading').innerHTML = `<div class="text-red-400 p-4">Deep scan timed out. Tier 1 results are still valid.</div>`;
+            document.getElementById('tier2Loading').innerHTML = `<div class="text-red-600 dark:text-red-400 p-4">Deep scan timed out. Tier 1 results are still valid.</div>`;
             enableScanButton();
             return;
         }
@@ -266,7 +268,7 @@ async function pollDeepScan(id) {
             } else if (job.state === 'failed') {
                 clearInterval(pollInterval);
                 const errorMsg = job.error ? escapeHtml(job.error) : 'Unknown error';
-                document.getElementById('tier2Loading').innerHTML = `<div class="text-red-400 p-4">Scan Failed: ${errorMsg}</div>`;
+                document.getElementById('tier2Loading').innerHTML = `<div class="text-red-600 dark:text-red-400 p-4">Scan Failed: ${errorMsg}</div>`;
                 enableScanButton();
             }
         } catch (err) {
@@ -294,8 +296,8 @@ function renderTier2(data) {
         data.tech.forEach(t => {
             const span = document.createElement('span');
             span.className = t.isLegacy ?
-                "px-2 py-1 rounded-md border text-xs font-mono cursor-pointer bg-yellow-900/30 border-yellow-700/50 text-yellow-500" :
-                "px-2 py-1 rounded-md border text-xs font-mono cursor-pointer bg-slate-800 border-slate-700 text-slate-300";
+                "px-2 py-1 rounded-md border text-xs font-mono cursor-pointer bg-yellow-100 dark:bg-yellow-900/30 border-yellow-200 dark:border-yellow-700/50 text-yellow-700 dark:text-yellow-500" :
+                "px-2 py-1 rounded-md border text-xs font-mono cursor-pointer bg-slate-100 dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300";
             span.textContent = t.name;
 
             if (t.isLegacy) {
@@ -322,10 +324,10 @@ function renderGauge(elementId, score, textElement) {
     const color = score >= 90 ? '#34d399' : (score >= 50 ? '#fbbf24' : '#ef4444');
     const circumference = 2 * Math.PI * 45;
     const offset = circumference - (score / 100) * circumference;
-
+    
     document.getElementById(elementId).innerHTML = `
         <svg viewBox="0 0 100 100" class="w-full h-full">
-            <circle cx="50" cy="50" r="45" fill="none" stroke="#1e293b" stroke-width="8" />
+            <circle cx="50" cy="50" r="45" fill="none" stroke="#cbd5e1" stroke-opacity="0.3" stroke-width="8" />
             <circle cx="50" cy="50" r="45" fill="none" stroke="${color}" stroke-width="8"
                     stroke-dasharray="${circumference}" stroke-dashoffset="${offset}"
                     class="circle-chart__circle" stroke-linecap="round" />
@@ -376,19 +378,19 @@ function showModal(id) {
         content.innerHTML = '';
 
         const serverDiv = document.createElement('div');
-        serverDiv.className = 'mb-4 text-xs font-mono bg-slate-900 p-2 rounded';
+        serverDiv.className = 'mb-4 text-xs font-mono bg-slate-100 dark:bg-slate-900 p-2 rounded text-slate-700 dark:text-slate-300';
         serverDiv.textContent = `Server: ${d.server}`;
         content.appendChild(serverDiv);
 
         if (d.missing && d.missing.length > 0) {
             const title = document.createElement('p');
-            title.className = 'text-red-400 text-xs font-bold mb-2';
+            title.className = 'text-red-600 dark:text-red-400 text-xs font-bold mb-2';
             title.textContent = 'Missing Recommended Headers:';
             content.appendChild(title);
 
             d.missing.forEach(m => {
                 const item = document.createElement('div');
-                item.className = 'text-red-300 text-sm mb-1 flex items-center gap-2';
+                item.className = 'text-red-600 dark:text-red-300 text-sm mb-1 flex items-center gap-2';
                 item.innerHTML = `<svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>`;
                 const text = document.createTextNode(` ${m}`);
                 item.appendChild(text);
@@ -396,7 +398,7 @@ function showModal(id) {
             });
         } else {
             const successDiv = document.createElement('div');
-            successDiv.className = 'text-emerald-400 text-sm flex items-center gap-2';
+            successDiv.className = 'text-emerald-600 dark:text-emerald-400 text-sm flex items-center gap-2';
             successDiv.innerHTML = `<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>`;
             const text = document.createTextNode(' All core security headers are present!');
             successDiv.appendChild(text);
@@ -412,14 +414,14 @@ function showModal(id) {
         if (d.open && d.open.length > 0) {
             d.open.forEach(p => {
                 const portDiv = document.createElement('div');
-                portDiv.className = 'flex justify-between bg-slate-900 p-2 rounded mb-2 border border-red-900/30';
+                portDiv.className = 'flex justify-between bg-slate-100 dark:bg-slate-900 p-2 rounded mb-2 border border-red-200 dark:border-red-900/30';
 
                 const portLabel = document.createElement('span');
-                portLabel.className = 'text-white font-mono';
+                portLabel.className = 'text-slate-800 dark:text-white font-mono';
                 portLabel.textContent = `Port ${p}`;
 
                 const statusLabel = document.createElement('span');
-                statusLabel.className = 'text-red-400 text-xs uppercase font-bold';
+                statusLabel.className = 'text-red-600 dark:text-red-400 text-xs uppercase font-bold';
                 statusLabel.textContent = 'Open';
 
                 portDiv.appendChild(portLabel);
@@ -428,7 +430,7 @@ function showModal(id) {
             });
         } else {
             const emptyDiv = document.createElement('div');
-            emptyDiv.className = 'text-emerald-400 text-sm';
+            emptyDiv.className = 'text-emerald-600 dark:text-emerald-400 text-sm';
             emptyDiv.textContent = 'No common ports found open (21, 22, 80, 443, 8080). This is good for security (stealth).';
             content.appendChild(emptyDiv);
         }
