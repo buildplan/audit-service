@@ -185,21 +185,17 @@ function setupDeepScan(domain, scanId) {
 }
 
 // --- Typewriter Placeholder ---
-function startPlaceholderAnimation(userIp) {
+function startPlaceholderAnimation() {
     const input = document.getElementById('domainInput');
-    const phrases = [ "Audit a Domain: e.g. wiredalter.com", "Check Security: e.g. google.com" ];
-    if (userIp) { 
-        const displayIp = userIp.length > 45 ? "your IPv6" : userIp;
-        phrases.unshift(`Scan your IP: ${displayIp}`); 
-    } else { 
-        phrases.unshift("Enter a Domain: e.g. example.com"); 
-    }
+    const phrases = [
+        "Audit a Domain: e.g. wiredalter.com", "Check Security: e.g. google.com", "Analyze Tech Stack: e.g. github.com"
+    ];
     let phraseIndex = 0; let charIndex = 0; let isDeleting = false;
     function typeLoop() {
         if (input.value) { setTimeout(typeLoop, 2000); return; }
         const currentPhrase = phrases[phraseIndex];
         input.placeholder = currentPhrase.substring(0, charIndex);
-        let typeSpeed = 50; 
+        let typeSpeed = 50;
         if (isDeleting) { typeSpeed = 25; charIndex--; } else { charIndex++; }
         if (!isDeleting && charIndex === currentPhrase.length + 1) { typeSpeed = 2000; isDeleting = true; }
         else if (isDeleting && charIndex === 0) { isDeleting = false; phraseIndex = (phraseIndex + 1) % phrases.length; typeSpeed = 500; }
@@ -213,13 +209,13 @@ fetch('https://ip.wiredalter.com/api/info')
     .then(res => res.json())
     .then(data => {
         document.getElementById('my-ip').innerText = data.ip;
-        document.getElementById('my-flag').innerText = getFlagEmoji(data.country_code || 'XX'); 
+        document.getElementById('my-flag').innerText = getFlagEmoji(data.country_code || 'XX');
         document.getElementById('my-connection').classList.remove('hidden');
-        startPlaceholderAnimation(data.ip);
+        startPlaceholderAnimation();
     })
-    .catch(e => { 
-        console.log('IP check failed'); 
-        startPlaceholderAnimation(null); 
+    .catch(e => {
+        console.log('IP check failed');
+        startPlaceholderAnimation();
     });
 
 function getFlagEmoji(countryCode) {
@@ -368,7 +364,7 @@ function renderGauge(elementId, score, textElement) {
     const color = score >= 90 ? '#34d399' : (score >= 50 ? '#fbbf24' : '#ef4444');
     const circumference = 2 * Math.PI * 45;
     const offset = circumference - (score / 100) * circumference;
-    
+
     document.getElementById(elementId).innerHTML = `
         <svg viewBox="0 0 100 100" class="w-full h-full">
             <circle cx="50" cy="50" r="45" fill="none" stroke="#cbd5e1" stroke-opacity="0.3" stroke-width="8" />
