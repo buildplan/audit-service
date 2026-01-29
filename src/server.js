@@ -75,7 +75,7 @@ app.post('/api/scan', async (req, res) => {
     let { domain } = req.body;
 
     if (!domain || typeof domain !== 'string') return res.status(400).json({ error: 'Domain required' });
-    domain = domain.trim().replace(/^https?:\/\//, '').replace(/\/$/, '');
+    domain = domain.trim().replace(/^https?:\/\//i, '').replace(/\/+$/, '').toLowerCase();
     if (!validator.isFQDN(domain)) return res.status(400).json({ error: 'Invalid domain format' });
 
     try {
@@ -114,7 +114,7 @@ app.post('/api/scan/deep', async (req, res) => {
 
     // Validation
     if (!domain || typeof domain !== 'string') return res.status(400).json({ error: 'Domain required' });
-    domain = domain.trim().replace(/^https?:\/\//, '').replace(/\/$/, '');
+    domain = domain.trim().replace(/^https?:\/\//i, '').replace(/\/+$/, '').toLowerCase();
     if (!validator.isFQDN(domain)) return res.status(400).json({ error: 'Invalid domain format' });
 
     try {

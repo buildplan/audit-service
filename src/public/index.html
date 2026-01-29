@@ -26,6 +26,15 @@
     <script>
         tailwind.config = { darkMode: 'class', theme: { extend: { colors: { wired: { dark: '#0b1120', light: '#f8fafc' }}}}}
     </script>
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org", "@type": "WebApplication",
+      "name": "WiredAlter Web Audit", "url": "https://audit.wiredalter.com",
+      "applicationCategory": "DeveloperTool", "operatingSystem": "Any",
+      "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+      "description": "Full-stack website audit tool. Checks SSL, Headers, Ports, Carbon footprint, and Technology Stack."
+    }
+    </script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
 
     <link rel="stylesheet" href="/style.css">
@@ -86,6 +95,17 @@
                 <span>Community Server: 1 Concurrent Scan Limit. <a href="https://github.com/buildplan/audit-service" target="_blank" class="underline hover:text-blue-600 dark:hover:text-blue-400 decoration-slate-300 dark:decoration-slate-700 transition-colors">Self-host for unlimited speed.</a></span>
             </div>
             <p id="errorMsg" class="text-red-600 dark:text-red-400 text-sm hidden mt-4 bg-red-100 dark:bg-red-900/20 py-2 px-4 rounded-lg inline-block border border-red-200 dark:border-red-900/50"></p>
+            <div id="my-connection" class="hidden text-center mb-6 px-4">
+                <span class="inline-flex flex-wrap justify-center items-center gap-2 px-3 py-1 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 text-xs font-mono border border-blue-200 dark:border-blue-800 max-w-full">
+                    <span class="relative flex h-2 w-2 shrink-0">
+                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
+                        <span class="relative inline-flex rounded-full h-2 w-2 bg-blue-500"></span>
+                    </span>
+                    <span class="whitespace-nowrap">You are connecting from:</span>
+                    <span id="my-ip" class="font-bold break-all">...</span>  
+                    <span id="my-flag" class="shrink-0 text-lg ml-1"></span>
+                </span>
+            </div>
         </div>
 
         <div id="loadingSection" class="hidden text-center py-12">
