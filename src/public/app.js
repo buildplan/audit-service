@@ -184,6 +184,50 @@ function setupDeepScan(domain, scanId) {
     pollDeepScan(scanId);
 }
 
+// --- Typewriter Placeholder ---
+function startPlaceholderAnimation(userIp) {
+    const input = document.getElementById('domainInput');
+    const phrases = [ "Audit a Domain: e.g. wiredalter.com", "Check Security: e.g. google.com" ];
+    if (userIp) { 
+        const displayIp = userIp.length > 45 ? "your IPv6" : userIp;
+        phrases.unshift(`Scan your IP: ${displayIp}`); 
+    } else { 
+        phrases.unshift("Enter a Domain: e.g. example.com"); 
+    }
+    let phraseIndex = 0; let charIndex = 0; let isDeleting = false;
+    function typeLoop() {
+        if (input.value) { setTimeout(typeLoop, 2000); return; }
+        const currentPhrase = phrases[phraseIndex];
+        input.placeholder = currentPhrase.substring(0, charIndex);
+        let typeSpeed = 50; 
+        if (isDeleting) { typeSpeed = 25; charIndex--; } else { charIndex++; }
+        if (!isDeleting && charIndex === currentPhrase.length + 1) { typeSpeed = 2000; isDeleting = true; }
+        else if (isDeleting && charIndex === 0) { isDeleting = false; phraseIndex = (phraseIndex + 1) % phrases.length; typeSpeed = 500; }
+        setTimeout(typeLoop, typeSpeed);
+    }
+    typeLoop();
+}
+
+// IP Detection
+fetch('https://ip.wiredalter.com/api/info')
+    .then(res => res.json())
+    .then(data => {
+        document.getElementById('my-ip').innerText = data.ip;
+        document.getElementById('my-flag').innerText = getFlagEmoji(data.country_code || 'XX'); 
+        document.getElementById('my-connection').classList.remove('hidden');
+        startPlaceholderAnimation(data.ip);
+    })
+    .catch(e => { 
+        console.log('IP check failed'); 
+        startPlaceholderAnimation(null); 
+    });
+
+function getFlagEmoji(countryCode) {
+    if (!countryCode || countryCode.length !== 2) return '';
+    const codePoints = countryCode.toUpperCase().split('').map(char =>  127397 + char.charCodeAt());
+    return String.fromCodePoint(...codePoints);
+}
+
 // ============================================
 // TIER 1 RENDERING
 // ============================================
