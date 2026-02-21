@@ -4,7 +4,7 @@ on:
   push:
     branches: [ main ]
     tags-ignore: [ '**' ]
-    paths-ignore: [ '**.md', '.gitignore', 'renovate.json', 'LICENSE', 'docs/**', '.github/workflows/'
+    paths-ignore: [ '**.md', '.gitignore', 'renovate.json', 'LICENSE', 'docs/**', '.github/workflows/' ]
 
 jobs:
   tag:
