@@ -4,7 +4,10 @@ npm-debug.log
 
 # Version Control
 .git
+.github
 .gitignore
+
+renovate.json
 
 # Docker Configs
 Dockerfile
