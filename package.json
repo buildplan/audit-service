@@ -4,7 +4,7 @@
   "description": "Comprehensive Network & Security Scanner",
   "main": "src/server.js",
   "overrides": {
-    "cookie": "0.7.2"
+    "cookie": "1.1.1"
   },
   "scripts": {
     "start": "node src/server.js",
