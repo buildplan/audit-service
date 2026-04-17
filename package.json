@@ -12,7 +12,7 @@
   "dependencies": {
     "@tgwf/co2": "^0.18.0",
     "axios": "^1.15.0",
-    "bullmq": "^5.73.5",
+    "bullmq": "^5.74.1",
     "chrome-launcher": "^1.2.1",
     "cors": "^2.8.6",
     "dotenv": "^17.4.2",
@@ -20,7 +20,7 @@
     "express-rate-limit": "^8.3.2",
     "ioredis": "^5.10.1",
     "lighthouse": "^11.3.0",
-    "puppeteer-core": "^24.40.0",
+    "puppeteer-core": "^24.41.0",
     "validator": "^13.15.35",
     "wappalyzer-core": "6.10.66"
   },
