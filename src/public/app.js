@@ -500,7 +500,12 @@ function showModal(id) {
         content.innerHTML = `
             <div class="mb-4 text-xs font-mono bg-slate-100 dark:bg-slate-900 p-2 rounded text-slate-700 dark:text-slate-300">Server: ${d.server || 'Hidden'}</div>
             ${missingHtml}
-            <div class="mt-4 pt-4 border-t border-slate-200 dark:border-slate-700"><details><summary class="cursor-pointer text-blue-500 text-xs">View Raw JSON</summary><pre class="mt-2 bg-slate-100 dark:bg-slate-900 p-2 rounded text-xs">${JSON.stringify(d, null, 2)}</pre></details></div>
+            <div class="mt-4 pt-4 border-t border-slate-200 dark:border-slate-700">
+                <details>
+                    <summary class="cursor-pointer text-blue-500 text-xs font-bold uppercase tracking-wider select-none">View Raw JSON</summary>
+                    <pre class="mt-2 bg-slate-100 dark:bg-slate-900 p-3 rounded-lg text-xs overflow-auto max-h-64 text-slate-800 dark:text-slate-300 shadow-inner">${JSON.stringify(d, null, 2)}</pre>
+                </details>
+            </div>
         `;
     }
 
