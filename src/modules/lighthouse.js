@@ -48,7 +48,12 @@ try {
             });
         }
 
-        delete tech.requires; delete tech.implies; delete tech.excludes;
+        ['implies', 'requires', 'excludes'].forEach(field => {
+            if (tech[field]) {
+                if (typeof tech[field] === 'string') tech[field] = tech[field];
+                else if (Array.isArray(tech[field])) tech[field] = tech[field];
+            }
+        });
 
         if (tech.versions) {
             if (Array.isArray(tech.versions)) tech.versions.forEach(v => translateToLegacy(v));
@@ -378,7 +383,7 @@ async function runDeepScan(domain) {
         };
 
         const runnerResult = await lighthouse(url, flags, config);
-        
+
         if (!runnerResult || !runnerResult.lhr) {
             throw new Error('Lighthouse returned no results');
         }
@@ -484,7 +489,7 @@ async function runDeepScan(domain) {
 
         const perfScore = report.categories.performance?.score;
         const seoScore = report.categories.seo?.score;
-        
+
         // If Lighthouse silently failed to score the page but didn't set a runtimeError
         if (perfScore === null || perfScore === 0 || perfScore === undefined) {
             const warnings = report.runWarnings ? report.runWarnings.join('; ') : 'No warnings';
