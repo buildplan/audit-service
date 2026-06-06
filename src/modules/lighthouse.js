@@ -355,14 +355,14 @@ async function runDeepScan(domain) {
 
         const flags = {
             port: chrome.port,
-            logLevel: 'error',
-            output: 'json',
-            onlyCategories: ['performance', 'seo', 'accessibility', 'best-practices']
+            logLevel: 'error'
         };
 
         const config = {
             extends: 'lighthouse:default',
             settings: {
+                output: 'json',
+                onlyCategories: ['performance', 'seo', 'accessibility', 'best-practices'],
                 formFactor: 'desktop',
                 screenEmulation: {
                     mobile: false,
@@ -377,7 +377,16 @@ async function runDeepScan(domain) {
         };
 
         const runnerResult = await lighthouse(url, flags, config);
+        
+        if (!runnerResult || !runnerResult.lhr) {
+            throw new Error('Lighthouse returned no results');
+        }
+
         const report = runnerResult.lhr;
+
+        if (report.runtimeError) {
+            throw new Error(`Lighthouse error: ${report.runtimeError.message}`);
+        }
 
         // Extract detailed lighthouse data
         const lighthouseDetails = extractLighthouseDetails(report);

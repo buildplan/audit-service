@@ -559,7 +559,7 @@ function showModal(id) {
                 displayData = { robots: currentData.robots, sitemap: currentData.sitemap };
             }
 
-            content.innerHTML = `<pre class="bg-slate-100 dark:bg-slate-900 p-4 rounded text-xs overflow-auto">${JSON.stringify(displayData, null, 2)}</pre>`;
+            content.innerHTML = `<pre class="bg-slate-100 dark:bg-slate-900 p-4 rounded text-xs overflow-auto text-slate-800 dark:text-slate-300">${JSON.stringify(displayData, null, 2)}</pre>`;
         }
     }
 
