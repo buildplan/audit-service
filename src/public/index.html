@@ -95,7 +95,7 @@
                 <span>Community Server: 1 Concurrent Scan Limit. <a href="https://github.com/buildplan/audit-service" target="_blank" class="underline hover:text-blue-600 dark:hover:text-blue-400 decoration-slate-300 dark:decoration-slate-700 transition-colors">Self-host for unlimited speed.</a></span>
             </div>
             <p id="errorMsg" class="text-red-600 dark:text-red-400 text-sm hidden mt-4 bg-red-100 dark:bg-red-900/20 py-2 px-4 rounded-lg inline-block border border-red-200 dark:border-red-900/50"></p>
-            <div id="my-connection" class="hidden text-center mb-6 px-4">
+            <div id="my-connection" class="hidden text-center mb-6 px-4 mt-6">
                 <span class="inline-flex flex-wrap justify-center items-center gap-2 px-3 py-1 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 text-xs font-mono border border-blue-200 dark:border-blue-800 max-w-full">
                     <span class="relative flex h-2 w-2 shrink-0">
                         <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
@@ -127,6 +127,7 @@
                 </h3>
                 
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                    
                     <div class="glass-panel p-6 rounded-xl cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-all group relative overflow-hidden" onclick="showModal('sslModal')">
                         <div class="text-blue-600 dark:text-blue-400 text-xs font-bold uppercase tracking-wider mb-2">SSL / TLS</div>
                         <div id="sslStatus" class="text-xl font-bold text-slate-800 dark:text-white mb-1">...</div>
@@ -138,7 +139,7 @@
                         <div class="text-blue-600 dark:text-blue-400 text-xs font-bold uppercase tracking-wider mb-2">HTTP Headers</div>
                         <div class="flex items-end gap-2">
                             <div id="headerGrade" class="text-4xl font-bold text-slate-800 dark:text-white">...</div>
-                            <div id="headerServer" class="text-sm text-slate-500 mb-1.5 font-mono"></div>
+                            <div id="headerScore" class="text-sm text-slate-500 mb-1.5 font-mono"></div>
                         </div>
                         <div class="absolute bottom-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity text-xs text-blue-600 dark:text-blue-400 bg-blue-100 dark:bg-blue-900/30 px-2 py-1 rounded">Analysis &rarr;</div>
                     </div>
@@ -146,7 +147,50 @@
                     <div class="glass-panel p-6 rounded-xl cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-all group relative" onclick="showModal('portsModal')">
                         <div class="text-blue-600 dark:text-blue-400 text-xs font-bold uppercase tracking-wider mb-2">Open Ports</div>
                         <div id="portsStatus" class="text-lg font-semibold text-slate-800 dark:text-white">...</div>
+                        <div id="portsDetail" class="text-sm text-slate-500">...</div>
                         <div class="absolute bottom-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity text-xs text-blue-600 dark:text-blue-400 bg-blue-100 dark:bg-blue-900/30 px-2 py-1 rounded">View Ports &rarr;</div>
+                    </div>
+
+                    <div class="glass-panel p-6 rounded-xl cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-all group relative" onclick="showModal('whoisModal')">
+                        <div class="text-blue-600 dark:text-blue-400 text-xs font-bold uppercase tracking-wider mb-2">Registration</div>
+                        <div id="whoisStatus" class="text-lg font-semibold text-slate-800 dark:text-white truncate">...</div>
+                        <div id="whoisDetail" class="text-sm text-slate-500">...</div>
+                        <div class="absolute bottom-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity text-xs text-blue-600 dark:text-blue-400 bg-blue-100 dark:bg-blue-900/30 px-2 py-1 rounded">WHOIS &rarr;</div>
+                    </div>
+
+                    <div class="glass-panel p-6 rounded-xl cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-all group relative" onclick="showModal('dnsModal')">
+                        <div class="text-blue-600 dark:text-blue-400 text-xs font-bold uppercase tracking-wider mb-2">DNS & Email</div>
+                        <div id="dnsStatus" class="text-lg font-semibold text-slate-800 dark:text-white">...</div>
+                        <div id="dnsDetail" class="text-sm text-slate-500">...</div>
+                        <div class="absolute bottom-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity text-xs text-blue-600 dark:text-blue-400 bg-blue-100 dark:bg-blue-900/30 px-2 py-1 rounded">Records &rarr;</div>
+                    </div>
+
+                    <div class="glass-panel p-6 rounded-xl cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-all group relative" onclick="showModal('cookiesModal')">
+                        <div class="text-blue-600 dark:text-blue-400 text-xs font-bold uppercase tracking-wider mb-2">Cookies</div>
+                        <div id="cookiesStatus" class="text-lg font-semibold text-slate-800 dark:text-white">...</div>
+                        <div id="cookiesDetail" class="text-sm text-slate-500">...</div>
+                        <div class="absolute bottom-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity text-xs text-blue-600 dark:text-blue-400 bg-blue-100 dark:bg-blue-900/30 px-2 py-1 rounded">Details &rarr;</div>
+                    </div>
+
+                    <div class="glass-panel p-6 rounded-xl cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-all group relative" onclick="showModal('redirectsModal')">
+                        <div class="text-blue-600 dark:text-blue-400 text-xs font-bold uppercase tracking-wider mb-2">Redirects</div>
+                        <div id="redirectsStatus" class="text-lg font-semibold text-slate-800 dark:text-white">...</div>
+                        <div id="redirectsDetail" class="text-sm text-slate-500">...</div>
+                        <div class="absolute bottom-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity text-xs text-blue-600 dark:text-blue-400 bg-blue-100 dark:bg-blue-900/30 px-2 py-1 rounded">Chain &rarr;</div>
+                    </div>
+
+                    <div class="glass-panel p-6 rounded-xl cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-all group relative" onclick="showModal('mixedContentModal')">
+                        <div class="text-blue-600 dark:text-blue-400 text-xs font-bold uppercase tracking-wider mb-2">Mixed Content</div>
+                        <div id="mixedContentStatus" class="text-lg font-semibold text-slate-800 dark:text-white">...</div>
+                        <div id="mixedContentDetail" class="text-sm text-slate-500">...</div>
+                        <div class="absolute bottom-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity text-xs text-blue-600 dark:text-blue-400 bg-blue-100 dark:bg-blue-900/30 px-2 py-1 rounded">Issues &rarr;</div>
+                    </div>
+
+                    <div class="glass-panel p-6 rounded-xl cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-all group relative" onclick="showModal('crawlerModal')">
+                        <div class="text-blue-600 dark:text-blue-400 text-xs font-bold uppercase tracking-wider mb-2">Crawling</div>
+                        <div id="crawlerStatus" class="text-lg font-semibold text-slate-800 dark:text-white">...</div>
+                        <div id="crawlerDetail" class="text-sm text-slate-500">...</div>
+                        <div class="absolute bottom-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity text-xs text-blue-600 dark:text-blue-400 bg-blue-100 dark:bg-blue-900/30 px-2 py-1 rounded">Robots &rarr;</div>
                     </div>
 
                     <div class="glass-panel p-6 rounded-xl cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-all group relative" onclick="showModal('carbonModal')">
@@ -166,7 +210,7 @@
                     </div>
                     <h3 class="text-xl font-bold text-slate-900 dark:text-white">Deep Infrastructure Audit</h3>
                     <p class="text-slate-500 dark:text-slate-400 max-w-lg mx-auto text-sm">
-                        Analyze Page Performance, SEO, Accessibility, and perform deep Tech Stack fingerprinting.
+                        Analyze Page Performance, SEO, Accessibility, Web Vitals, and deep Tech Stack fingerprinting.
                         <br><span class="text-slate-400 dark:text-slate-500 italic">(Requires spawning a headless browser instance)</span>
                     </p>
                     <button onclick="triggerDeepScan()" id="deepScanBtn" class="mt-4 px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-xl transition-all shadow-lg shadow-blue-900/20 flex items-center gap-2 mx-auto">
@@ -191,42 +235,64 @@
                     </div>
                 </div>
 
-                <div id="tier2Results" class="hidden grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div class="glass-panel p-6 rounded-xl flex flex-col items-center justify-center cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-all" onclick="showModal('perfModal')">
-                        <div class="text-slate-500 dark:text-slate-400 text-xs font-bold uppercase mb-4">Performance</div>
-                        <div id="perfGauge" class="w-24 h-24"></div>
-                        <div id="perfScore" class="text-3xl font-bold text-slate-800 dark:text-white -mt-16 mb-8">0</div>
-                        <div class="text-xs text-blue-600 dark:text-blue-400 bg-blue-100 dark:bg-blue-900/30 px-2 py-1 rounded">What is this?</div>
-                    </div>
+                <div id="tier2Results" class="hidden space-y-8">
                     
-                    <div class="glass-panel p-6 rounded-xl flex flex-col items-center justify-center cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-all" onclick="showModal('seoModal')">
-                        <div class="text-slate-500 dark:text-slate-400 text-xs font-bold uppercase mb-4">SEO</div>
-                        <div id="seoGauge" class="w-24 h-24"></div>
-                        <div id="seoScore" class="text-3xl font-bold text-slate-800 dark:text-white -mt-16 mb-8">0</div>
-                        <div class="text-xs text-blue-600 dark:text-blue-400 bg-blue-100 dark:bg-blue-900/30 px-2 py-1 rounded">What is this?</div>
+                    <!-- Core Scores -->
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                        <div class="glass-panel p-4 text-center rounded-xl cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-all" onclick="showModal('perfModal')">
+                            <div class="text-xs uppercase font-bold text-slate-500 mb-2">Performance</div>
+                            <div id="scorePerf" class="text-3xl font-bold">0</div>
+                            <div class="text-[10px] text-blue-600 dark:text-blue-400 mt-2">What is this?</div>
+                        </div>
+                        <div class="glass-panel p-4 text-center rounded-xl cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-all" onclick="showModal('seoModal')">
+                            <div class="text-xs uppercase font-bold text-slate-500 mb-2">SEO</div>
+                            <div id="scoreSeo" class="text-3xl font-bold">0</div>
+                            <div class="text-[10px] text-blue-600 dark:text-blue-400 mt-2">What is this?</div>
+                        </div>
+                        <div class="glass-panel p-4 text-center rounded-xl cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-all" onclick="showModal('a11yModal')">
+                            <div class="text-xs uppercase font-bold text-slate-500 mb-2">Accessibility</div>
+                            <div id="scoreA11y" class="text-3xl font-bold">0</div>
+                            <div class="text-[10px] text-blue-600 dark:text-blue-400 mt-2">What is this?</div>
+                        </div>
+                        <div class="glass-panel p-4 text-center rounded-xl">
+                            <div class="text-xs uppercase font-bold text-slate-500 mb-2">Best Practices</div>
+                            <div id="scoreBp" class="text-3xl font-bold">0</div>
+                        </div>
                     </div>
 
-                    <div class="glass-panel p-6 rounded-xl cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-all" onclick="showModal('techModal')">
-                        <div class="text-slate-500 dark:text-slate-400 text-xs font-bold uppercase mb-4">Tech Stack</div>
-                        <div id="techStackList" class="flex flex-wrap gap-2"></div>
-                        <div class="mt-4 pt-4 border-t border-slate-200 dark:border-slate-700/50">
-                            <span class="text-xs text-blue-600 dark:text-blue-400">How we detect this &rarr;</span>
+                    <!-- Core Web Vitals -->
+                    <div class="glass-panel p-6 rounded-xl">
+                        <h4 class="font-bold mb-4">Core Web Vitals</h4>
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-4" id="cwvGrid"></div>
+                    </div>
+
+                    <!-- Tech Stack & Page Info -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="glass-panel p-6 rounded-xl cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-all relative group overflow-hidden" onclick="showModal('techModal')">
+                            <h4 class="font-bold mb-4">Tech Stack</h4>
+                            <div id="techStackList" class="flex flex-wrap gap-2"></div>
+                            <div class="absolute bottom-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity text-xs text-blue-600 dark:text-blue-400 bg-blue-100 dark:bg-blue-900/30 px-2 py-1 rounded">How we detect this &rarr;</div>
+                        </div>
+                        <div class="glass-panel p-6 rounded-xl">
+                            <h4 class="font-bold mb-4">Page Diagnostics</h4>
+                            <div id="pageDiagnostics" class="space-y-2 text-sm font-mono bg-slate-100 dark:bg-slate-800/50 p-4 rounded border border-slate-200 dark:border-slate-700/50"></div>
                         </div>
                     </div>
-                </div>
                 
-                <div id="screenshotContainer" class="hidden mt-6">
-                    <h3 class="text-sm font-bold text-slate-500 dark:text-slate-400 mb-3 uppercase tracking-wider">Live Preview</h3>
-                    <a id="screenshotLink" href="#" target="_blank" class="block relative group overflow-hidden rounded-xl border border-slate-200 dark:border-slate-700/50 shadow-2xl">
-                        <img id="screenshotImg" class="w-full transform transition-transform duration-700 group-hover:scale-105 group-hover:opacity-100 opacity-90" src="" alt="Site Screenshot" style="object-fit: cover;">
-                        <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end justify-center pb-6">
-                            <span class="bg-blue-600 text-white px-4 py-2 rounded-lg font-medium text-sm shadow-lg flex items-center gap-2">
-                                Visit Website 
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
-                            </span>
-                        </div>
-                    </a>
+                    <div id="screenshotContainer" class="hidden mt-6">
+                        <h3 class="text-sm font-bold text-slate-500 dark:text-slate-400 mb-3 uppercase tracking-wider">Live Preview</h3>
+                        <a id="screenshotLink" href="#" target="_blank" class="block relative group overflow-hidden rounded-xl border border-slate-200 dark:border-slate-700/50 shadow-2xl">
+                            <img id="screenshotImg" class="w-full transform transition-transform duration-700 group-hover:scale-105 group-hover:opacity-100 opacity-90" src="" alt="Site Screenshot" style="object-fit: cover;">
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end justify-center pb-6">
+                                <span class="bg-blue-600 text-white px-4 py-2 rounded-lg font-medium text-sm shadow-lg flex items-center gap-2">
+                                    Visit Website 
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+                                </span>
+                            </div>
+                        </a>
+                    </div>
                 </div>
+
             </div>
 
         </div>
@@ -308,10 +374,11 @@
         </div>
     </footer>
 
+    <!-- Beautiful Original Modals & New Matching Ones -->
     <dialog id="sslModal" class="glass-modal rounded-xl p-0 w-full max-w-lg backdrop:bg-slate-900/80 backdrop:backdrop-blur-sm shadow-2xl">
         <div class="p-6">
             <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-4 flex items-center gap-2"><svg class="w-5 h-5 text-emerald-500 dark:text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg> SSL Certificate</h3>
-            <div id="sslModalContent" class="space-y-3 text-sm font-mono text-slate-600 dark:text-slate-300 border-b border-slate-200 dark:border-slate-700 pb-4 mb-4"></div>
+            <div id="sslModalContent" class="space-y-3 text-sm font-mono text-slate-600 dark:text-slate-300 border-b border-slate-200 dark:border-slate-700 pb-4 mb-4 max-h-64 overflow-y-auto"></div>
             
             <div class="bg-blue-100 dark:bg-blue-900/20 p-4 rounded-lg border border-blue-200 dark:border-blue-500/20 text-sm">
                 <h4 class="font-bold text-blue-600 dark:text-blue-400 mb-1">Why is this important?</h4>
@@ -325,7 +392,7 @@
     <dialog id="headersModal" class="glass-modal rounded-xl p-0 w-full max-w-lg backdrop:bg-slate-900/80 backdrop:backdrop-blur-sm shadow-2xl">
         <div class="p-6">
             <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-4">HTTP Security Headers</h3>
-            <div id="headersModalContent" class="space-y-3 border-b border-slate-200 dark:border-slate-700 pb-4 mb-4"></div>
+            <div id="headersModalContent" class="space-y-3 text-sm font-mono border-b border-slate-200 dark:border-slate-700 pb-4 mb-4 max-h-64 overflow-y-auto"></div>
             
             <div class="space-y-3">
                 <div class="bg-slate-100 dark:bg-slate-800/50 p-3 rounded border border-slate-200 dark:border-slate-700/50">
@@ -348,7 +415,7 @@
     <dialog id="portsModal" class="glass-modal rounded-xl p-0 w-full max-w-lg backdrop:bg-slate-900/80 backdrop:backdrop-blur-sm shadow-2xl">
         <div class="p-6">
             <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-4">Port Scan Analysis</h3>
-            <div id="portsModalContent" class="space-y-2 border-b border-slate-200 dark:border-slate-700 pb-4 mb-4"></div>
+            <div id="portsModalContent" class="space-y-2 text-sm font-mono border-b border-slate-200 dark:border-slate-700 pb-4 mb-4 max-h-64 overflow-y-auto"></div>
             
             <div class="bg-blue-100 dark:bg-blue-900/20 p-4 rounded-lg border border-blue-200 dark:border-blue-500/20 text-sm">
                 <h4 class="font-bold text-blue-600 dark:text-blue-400 mb-1">Understanding Ports</h4>
@@ -413,6 +480,63 @@
                 <p class="text-slate-600 dark:text-slate-400">Revealing detailed version numbers (e.g., "Nginx 1.18.0") can help attackers find specific vulnerabilities (CVEs). It is best practice to hide version numbers in production.</p>
             </div>
             <button onclick="closeModal('techModal')" class="mt-6 w-full py-2 bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-800 dark:text-white rounded-lg transition-colors">Close</button>
+        </div>
+    </dialog>
+
+    <dialog id="whoisModal" class="glass-modal rounded-xl p-0 w-full max-w-lg backdrop:bg-slate-900/80 backdrop:backdrop-blur-sm shadow-2xl">
+        <div class="p-6">
+            <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-4">Domain Registration</h3>
+            <div id="whoisModalContent" class="space-y-2 text-sm font-mono border-b border-slate-200 dark:border-slate-700 pb-4 mb-4 max-h-64 overflow-y-auto"></div>
+            <button onclick="closeModal('whoisModal')" class="mt-6 w-full py-2 bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-800 dark:text-white rounded-lg transition-colors">Close</button>
+        </div>
+    </dialog>
+
+    <dialog id="dnsModal" class="glass-modal rounded-xl p-0 w-full max-w-2xl backdrop:bg-slate-900/80 backdrop:backdrop-blur-sm shadow-2xl">
+        <div class="p-6">
+            <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-4">DNS & Email Security</h3>
+            <div id="dnsModalContent" class="space-y-2 text-sm font-mono border-b border-slate-200 dark:border-slate-700 pb-4 mb-4 max-h-96 overflow-y-auto"></div>
+            <button onclick="closeModal('dnsModal')" class="mt-6 w-full py-2 bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-800 dark:text-white rounded-lg transition-colors">Close</button>
+        </div>
+    </dialog>
+
+    <dialog id="cookiesModal" class="glass-modal rounded-xl p-0 w-full max-w-lg backdrop:bg-slate-900/80 backdrop:backdrop-blur-sm shadow-2xl">
+        <div class="p-6">
+            <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-4">Cookie Security</h3>
+            <div id="cookiesModalContent" class="space-y-2 text-sm font-mono border-b border-slate-200 dark:border-slate-700 pb-4 mb-4 max-h-64 overflow-y-auto"></div>
+            <button onclick="closeModal('cookiesModal')" class="mt-6 w-full py-2 bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-800 dark:text-white rounded-lg transition-colors">Close</button>
+        </div>
+    </dialog>
+
+    <dialog id="redirectsModal" class="glass-modal rounded-xl p-0 w-full max-w-lg backdrop:bg-slate-900/80 backdrop:backdrop-blur-sm shadow-2xl">
+        <div class="p-6">
+            <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-4">Redirect Chain</h3>
+            <div id="redirectsModalContent" class="space-y-2 text-sm font-mono border-b border-slate-200 dark:border-slate-700 pb-4 mb-4 max-h-64 overflow-y-auto"></div>
+            <button onclick="closeModal('redirectsModal')" class="mt-6 w-full py-2 bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-800 dark:text-white rounded-lg transition-colors">Close</button>
+        </div>
+    </dialog>
+
+    <dialog id="mixedContentModal" class="glass-modal rounded-xl p-0 w-full max-w-lg backdrop:bg-slate-900/80 backdrop:backdrop-blur-sm shadow-2xl">
+        <div class="p-6">
+            <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-4">Mixed Content Check</h3>
+            <div id="mixedContentModalContent" class="space-y-2 text-sm font-mono border-b border-slate-200 dark:border-slate-700 pb-4 mb-4 max-h-64 overflow-y-auto"></div>
+            <button onclick="closeModal('mixedContentModal')" class="mt-6 w-full py-2 bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-800 dark:text-white rounded-lg transition-colors">Close</button>
+        </div>
+    </dialog>
+
+    <dialog id="crawlerModal" class="glass-modal rounded-xl p-0 w-full max-w-2xl backdrop:bg-slate-900/80 backdrop:backdrop-blur-sm shadow-2xl">
+        <div class="p-6">
+            <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-4">Robots & Sitemap</h3>
+            <div id="crawlerModalContent" class="space-y-2 text-sm font-mono border-b border-slate-200 dark:border-slate-700 pb-4 mb-4 max-h-64 overflow-y-auto"></div>
+            <button onclick="closeModal('crawlerModal')" class="mt-6 w-full py-2 bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-800 dark:text-white rounded-lg transition-colors">Close</button>
+        </div>
+    </dialog>
+
+    <dialog id="a11yModal" class="glass-modal rounded-xl p-0 w-full max-w-lg backdrop:bg-slate-900/80 backdrop:backdrop-blur-sm shadow-2xl">
+        <div class="p-6">
+            <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-4">Accessibility (a11y)</h3>
+            <p class="text-slate-500 dark:text-slate-400 text-sm mb-4">Accessibility ensures your site is usable by people with disabilities (e.g., screen readers, keyboard navigation).</p>
+            <div id="a11yModalContent" class="space-y-3 text-sm border-b border-slate-200 dark:border-slate-700 pb-4 mb-4"></div>
+            <button onclick="closeModal('a11yModal')" class="mt-6 w-full py-2 bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-800 dark:text-white rounded-lg transition-colors">Close</button>
         </div>
     </dialog>
 
