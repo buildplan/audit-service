@@ -359,23 +359,6 @@ async function pollDeepScan(id) {
 // TIER 2 RENDERING
 // ============================================
 
-function renderGauge(elementId, score, textElement) {
-    const color = score >= 90 ? '#34d399' : (score >= 50 ? '#fbbf24' : '#ef4444');
-    const circumference = 2 * Math.PI * 45;
-    const offset = circumference - (score / 100) * circumference;
-
-    document.getElementById(elementId).innerHTML = `
-        <svg viewBox="0 0 100 100" class="w-full h-full transform -rotate-90">
-            <circle cx="50" cy="50" r="45" fill="none" stroke="#cbd5e1" stroke-opacity="0.3" stroke-width="8" />
-            <circle cx="50" cy="50" r="45" fill="none" stroke="${color}" stroke-width="8"
-                    stroke-dasharray="${circumference}" stroke-dashoffset="${offset}"
-                    class="circle-chart__circle transition-all duration-1000 ease-out" stroke-linecap="round" />
-        </svg>
-    `;
-    textElement.textContent = Math.round(score);
-    textElement.style.color = color;
-}
-
 let currentTier2Data = {};
 
 function renderTier2(data) {
@@ -385,11 +368,20 @@ function renderTier2(data) {
 
     const colorize = (score) => score >= 90 ? '#34d399' : (score >= 50 ? '#fbbf24' : '#ef4444');
 
-    // 1. Gauges
-    renderGauge('perfGauge', data.performance, document.getElementById('scorePerf'));
-    renderGauge('seoGauge', data.seo, document.getElementById('scoreSeo'));
+    // 1. Core Scores
+    const elPerf = document.getElementById('scorePerf');
+    if (elPerf) {
+        elPerf.textContent = Math.round(data.performance || 0);
+        elPerf.style.color = colorize(data.performance || 0);
+    }
 
-    // 2. A11y & BP (if they exist in layout, else ignore)
+    const elSeo = document.getElementById('scoreSeo');
+    if (elSeo) {
+        elSeo.textContent = Math.round(data.seo || 0);
+        elSeo.style.color = colorize(data.seo || 0);
+    }
+
+    // 2. A11y & BP (if they exist in layout)
     const elA11y = document.getElementById('scoreA11y');
     if (elA11y) {
         elA11y.textContent = Math.round(data.accessibility || 0);
