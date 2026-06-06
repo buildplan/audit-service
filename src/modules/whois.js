@@ -8,15 +8,25 @@ async function checkWhois(domain) {
         
         const data = res.data;
         
+        const parsed = data.parsed || {};
+        
+        // Calculate domain age if created date exists
+        let domainAge = null;
+        if (parsed.created) {
+            const created = new Date(parsed.created);
+            const now = new Date();
+            domainAge = Math.floor((now - created) / (1000 * 60 * 60 * 24));
+        }
+
         return {
-            registrar: data.registrar || 'Unknown',
-            createdDate: data.createdDate || null,
-            expiryDate: data.expiryDate || null,
-            domainAge: data.domainAge || null,
-            nameServers: data.nameServers || [],
+            registrar: parsed.registrar || 'Unknown',
+            createdDate: parsed.created || null,
+            expiryDate: parsed.expires || null,
+            domainAge: domainAge,
+            nameServers: parsed.nameservers || [],
             registrant: {
-                country: data.registrant?.country || null,
-                org: data.registrant?.org || null
+                country: parsed.registrant_country || null,
+                org: parsed.registrant_organization || null
             }
         };
     } catch (error) {
