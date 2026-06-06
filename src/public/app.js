@@ -86,7 +86,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 function getFlagEmoji(countryCode) {
     if (!countryCode || countryCode.length !== 2) return '';
-    const codePoints = countryCode.toUpperCase().split('').map(char =>  127397 + char.charCodeAt());
+    const codePoints = countryCode.toUpperCase().split('').map(char => 127397 + char.charCodeAt());
     return String.fromCodePoint(...codePoints);
 }
 
@@ -135,7 +135,7 @@ async function startScan() {
 
         const res = await fetch('/api/scan', {
             method: 'POST',
-            headers: {'Content-Type': 'application/json'},
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ domain }),
             signal: controller.signal
         });
@@ -266,7 +266,7 @@ async function triggerDeepScan() {
     try {
         const res = await fetch('/api/scan/deep', {
             method: 'POST',
-            headers: {'Content-Type': 'application/json'},
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ domain: currentDomain })
         });
 
@@ -333,7 +333,7 @@ async function pollDeepScan(id) {
         try {
             const res = await fetch(`/api/scan/${id}`);
             if (!res.ok) throw new Error(`HTTP ${res.status}`);
-            
+
             const job = await res.json();
 
             if (job.state === 'completed') {
@@ -403,7 +403,7 @@ function renderTier2(data) {
                 span.className = t.isLegacy ?
                     "px-2 py-1 rounded-md border text-xs font-mono cursor-pointer bg-yellow-100 dark:bg-yellow-900/30 border-yellow-200 dark:border-yellow-700/50 text-yellow-700 dark:text-yellow-500" :
                     "px-2 py-1 rounded-md border text-xs font-mono cursor-pointer bg-slate-100 dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300";
-                
+
                 const versionTxt = t.version ? ` v${t.version}` : '';
                 span.textContent = t.name + versionTxt;
 
@@ -473,7 +473,7 @@ function showModal(id) {
                 <span class="text-slate-500">Cipher:</span> <span>${d.cipher || '-'}</span>
                 <span class="text-slate-500">Key:</span> <span>${d.keyType || ''} ${d.keySize || ''}</span>
             </div>
-            ${d.vulnerabilities && (d.vulnerabilities.tls10 || d.vulnerabilities.tls11) ? 
+            ${d.vulnerabilities && (d.vulnerabilities.tls10 || d.vulnerabilities.tls11) ?
                 `<div class="mt-4 p-2 bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400 rounded">
                     ⚠️ Vulnerability: Server supports deprecated TLS 1.0/1.1 protocols.
                 </div>` : ''}
@@ -521,37 +521,271 @@ function showModal(id) {
         content.innerHTML = html;
     }
 
-    // Generic JSON dump fallback for new modals
-    const genericModals = ['whoisModal', 'dnsModal', 'cookiesModal', 'redirectsModal', 'mixedContentModal', 'crawlerModal', 'a11yModal'];
-    if (genericModals.includes(id) && content) {
-        if (id === 'a11yModal') {
-            const issues = currentTier2Data.a11yIssues || [];
-            if (issues.length > 0) {
-                let html = '<p class="text-red-600 dark:text-red-400 font-bold text-xs mb-2">Failing Checks:</p>';
-                issues.forEach(iss => {
-                    html += `<div class="bg-red-50 dark:bg-red-900/10 p-2 rounded mb-2 border border-red-100 dark:border-red-900/30">
-                        <div class="font-bold text-slate-800 dark:text-slate-200 text-xs">${iss.title}</div>
-                        <div class="text-slate-600 dark:text-slate-400 text-xs mt-1">${iss.description || ''}</div>
-                    </div>`;
-                });
-                content.innerHTML = html;
-            } else {
-                content.innerHTML = `<div class="text-emerald-600 dark:text-emerald-400 text-sm">Perfect accessibility score! No issues found.</div>`;
-            }
-        } else {
-            const keyMap = {
-                'whoisModal': 'whois', 'dnsModal': 'dns', 'cookiesModal': 'cookies', 
-                'redirectsModal': 'redirects', 'mixedContentModal': 'mixedContent', 'crawlerModal': 'robots'
-            };
-            const dataKey = keyMap[id];
-            let displayData = dataKey ? currentData[dataKey] : {};
-            
-            // special case for crawler (combine robots and sitemap)
-            if (id === 'crawlerModal') {
-                displayData = { robots: currentData.robots, sitemap: currentData.sitemap };
-            }
+    if (id === 'whoisModal' && content) {
+        const d = currentData.whois || {};
+        content.innerHTML = `
+            <div class="grid grid-cols-2 gap-4 text-sm mb-4">
+                <div><span class="text-slate-500 block text-xs">Registrar</span> <span class="font-semibold text-slate-800 dark:text-slate-200">${d.registrar || 'Unknown'}</span></div>
+                <div><span class="text-slate-500 block text-xs">Domain Age</span> <span class="font-semibold text-slate-800 dark:text-slate-200">${d.domainAge ? `${d.domainAge} days` : 'Unknown'}</span></div>
+                <div><span class="text-slate-500 block text-xs">Created Date</span> <span class="text-slate-800 dark:text-slate-300">${d.createdDate ? new Date(d.createdDate).toLocaleDateString() : '-'}</span></div>
+                <div><span class="text-slate-500 block text-xs">Expiry Date</span> <span class="text-slate-800 dark:text-slate-300">${d.expiryDate ? new Date(d.expiryDate).toLocaleDateString() : '-'}</span></div>
+                <div><span class="text-slate-500 block text-xs">Registrant Org</span> <span class="text-slate-800 dark:text-slate-300">${d.registrant?.org || '-'}</span></div>
+                <div><span class="text-slate-500 block text-xs">Country</span> <span class="text-slate-800 dark:text-slate-300">${d.registrant?.country || '-'}</span></div>
+            </div>
+            ${d.nameServers?.length ? `
+                <div class="border-t border-slate-200 dark:border-slate-700 pt-3">
+                    <span class="text-slate-500 text-xs block mb-2">Name Servers:</span>
+                    <div class="flex flex-wrap gap-2">
+                        ${d.nameServers.map(ns => `<span class="bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 text-xs px-2 py-1 rounded font-mono">${ns}</span>`).join('')}
+                    </div>
+                </div>
+            ` : ''}
+        `;
+    }
 
-            content.innerHTML = `<pre class="bg-slate-100 dark:bg-slate-900 p-4 rounded text-xs overflow-auto text-slate-800 dark:text-slate-300">${JSON.stringify(displayData, null, 2)}</pre>`;
+    if (id === 'dnsModal' && content) {
+        const d = currentData.dns || {};
+
+        const renderRecords = (title, records, colorCls, bgCls) => {
+            if (!records || !records.length) return '';
+            return `
+                <div class="mb-4">
+                    <span class="text-xs font-bold uppercase ${colorCls} block mb-1">${title}</span>
+                    <div class="space-y-1">
+                        ${records.map(rec => `<div class="${bgCls} p-2 rounded text-xs font-mono break-all border border-slate-100 dark:border-slate-800">${rec.value || rec.exchange || rec}</div>`).join('')}
+                    </div>
+                </div>
+            `;
+        };
+
+        content.innerHTML = `
+            <div class="grid grid-cols-2 gap-4 mb-4 border-b border-slate-200 dark:border-slate-700 pb-4">
+                <div>
+                    <span class="text-slate-500 block text-xs mb-1">DMARC Record</span>
+                    ${d.emailSecurity?.dmarc?.exists ? '<span class="text-emerald-600 dark:text-emerald-400 font-bold text-sm">Present</span>' : '<span class="text-red-600 dark:text-red-400 font-bold text-sm">Missing</span>'}
+                </div>
+                <div>
+                    <span class="text-slate-500 block text-xs mb-1">SPF Record</span>
+                    ${d.emailSecurity?.spf?.exists ? '<span class="text-emerald-600 dark:text-emerald-400 font-bold text-sm">Present</span>' : '<span class="text-yellow-600 dark:text-yellow-400 font-bold text-sm">Missing</span>'}
+                </div>
+            </div>
+            <div class="max-h-64 overflow-y-auto pr-2 custom-scrollbar">
+                ${renderRecords('A / AAAA (IPv4/IPv6)', [...(d.a || []), ...(d.aaaa || [])], 'text-blue-500', 'bg-blue-50 dark:bg-blue-900/10 dark:text-blue-300')}
+                ${renderRecords('MX (Mail Servers)', d.mx, 'text-purple-500', 'bg-purple-50 dark:bg-purple-900/10 dark:text-purple-300')}
+                ${renderRecords('CNAME (Aliases)', d.cname, 'text-emerald-500', 'bg-emerald-50 dark:bg-emerald-900/10 dark:text-emerald-300')}
+                ${renderRecords('TXT (Text Records)', d.txt, 'text-slate-500', 'bg-slate-50 dark:bg-slate-800/50 dark:text-slate-300')}
+            </div>
+        `;
+    }
+
+    if (id === 'cookiesModal' && content) {
+        const d = currentData.cookies || {};
+        const isBad = d.overallRating === 'bad';
+        const isWarn = d.overallRating === 'warning';
+
+        content.innerHTML = `
+            <div class="flex items-center gap-4 mb-4 p-3 rounded-lg ${isBad ? 'bg-red-50 dark:bg-red-900/20' : (isWarn ? 'bg-yellow-50 dark:bg-yellow-900/20' : 'bg-emerald-50 dark:bg-emerald-900/20')}">
+                <div class="text-2xl">${isBad ? '🚨' : (isWarn ? '⚠️' : '✅')}</div>
+                <div>
+                    <div class="font-bold ${isBad ? 'text-red-700 dark:text-red-400' : (isWarn ? 'text-yellow-700 dark:text-yellow-400' : 'text-emerald-700 dark:text-emerald-400')}">
+                        ${d.totalCount} Cookies Detected
+                    </div>
+                    <div class="text-xs ${isBad ? 'text-red-600 dark:text-red-300' : (isWarn ? 'text-yellow-600 dark:text-yellow-300' : 'text-emerald-600 dark:text-emerald-300')}">
+                        ${d.hasTrackingCookies ? 'Tracking cookies found.' : 'No major trackers detected.'}
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-3 gap-2 mb-4 text-center">
+                <div class="bg-slate-50 dark:bg-slate-900 p-2 rounded">
+                    <div class="text-lg font-bold ${d.missingSecure > 0 ? 'text-red-500' : 'text-slate-700 dark:text-slate-300'}">${d.missingSecure || 0}</div>
+                    <div class="text-[10px] uppercase text-slate-500">Missing Secure</div>
+                </div>
+                <div class="bg-slate-50 dark:bg-slate-900 p-2 rounded">
+                    <div class="text-lg font-bold ${d.missingHttpOnly > 0 ? 'text-red-500' : 'text-slate-700 dark:text-slate-300'}">${d.missingHttpOnly || 0}</div>
+                    <div class="text-[10px] uppercase text-slate-500">Missing HttpOnly</div>
+                </div>
+                <div class="bg-slate-50 dark:bg-slate-900 p-2 rounded">
+                    <div class="text-lg font-bold ${d.missingSameSite > 0 ? 'text-red-500' : 'text-slate-700 dark:text-slate-300'}">${d.missingSameSite || 0}</div>
+                    <div class="text-[10px] uppercase text-slate-500">Missing SameSite</div>
+                </div>
+            </div>
+
+            <div class="text-xs text-slate-500 italic mt-4 pt-3 border-t border-slate-200 dark:border-slate-700">Note: This only detects cookies set via HTTP response headers on the initial load. Client-side JS cookies require a Deep Scan.</div>
+        `;
+    }
+
+    if (id === 'redirectsModal' && content) {
+        const d = currentData.redirects || {};
+
+        let chainHtml = '<div class="text-emerald-600 dark:text-emerald-400 text-sm">No redirects found. Directly serves target URL.</div>';
+
+        if (d.chain && d.chain.length > 0) {
+            chainHtml = '<div class="space-y-2 relative before:absolute before:inset-0 before:ml-2 before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-transparent before:via-slate-300 dark:before:via-slate-700 before:to-transparent">';
+            d.chain.forEach((hop, i) => {
+                const isLast = i === d.chain.length - 1;
+                chainHtml += `
+                    <div class="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active">
+                        <div class="flex items-center justify-center w-5 h-5 rounded-full border-2 border-white dark:border-slate-900 bg-blue-500 text-slate-100 shadow shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 z-10 text-[10px]">
+                            ${i + 1}
+                        </div>
+                        <div class="w-[calc(100%-2rem)] md:w-[calc(50%-1.5rem)] bg-slate-50 dark:bg-slate-900 p-3 rounded-lg border border-slate-200 dark:border-slate-700 shadow-sm text-xs break-all">
+                            <span class="text-slate-500 mb-1 block">Status: <span class="${hop.statusCode >= 400 ? 'text-red-500' : (hop.statusCode >= 300 ? 'text-blue-500' : 'text-emerald-500')} font-bold">${hop.statusCode}</span></span>
+                            <span class="text-slate-800 dark:text-slate-200">${hop.url}</span>
+                            ${hop.location ? `<div class="mt-2 pt-2 border-t border-slate-200 dark:border-slate-800 text-slate-500 block">Redirects to: <br><span class="text-blue-600 dark:text-blue-400">${hop.location}</span></div>` : ''}
+                        </div>
+                    </div>
+                `;
+            });
+            chainHtml += '</div>';
+        }
+
+        content.innerHTML = `
+            <div class="flex justify-between items-center mb-6 bg-slate-100 dark:bg-slate-800/50 p-3 rounded-lg">
+                <div>
+                    <span class="text-[10px] uppercase text-slate-500 font-bold block">HTTP to HTTPS</span>
+                    ${d.httpToHttps ? '<span class="text-emerald-600 dark:text-emerald-400 font-bold text-sm">Enforced</span>' : '<span class="text-red-600 dark:text-red-400 font-bold text-sm">Missing</span>'}
+                </div>
+                <div>
+                    <span class="text-[10px] uppercase text-slate-500 font-bold block">Redirect Loop</span>
+                    ${d.hasLoop ? '<span class="text-red-600 dark:text-red-400 font-bold text-sm">Detected</span>' : '<span class="text-emerald-600 dark:text-emerald-400 font-bold text-sm">None</span>'}
+                </div>
+                <div>
+                    <span class="text-[10px] uppercase text-slate-500 font-bold block">Total Hops</span>
+                    <span class="text-slate-800 dark:text-slate-200 font-bold text-sm">${d.totalHops || 0}</span>
+                </div>
+            </div>
+            <div class="font-bold text-xs uppercase text-slate-500 mb-4">Redirection Trace</div>
+            ${chainHtml}
+        `;
+    }
+
+    if (id === 'mixedContentModal' && content) {
+        const d = currentData.mixedContent || {};
+
+        if (!d.hasMixedContent) {
+            content.innerHTML = `
+                <div class="flex flex-col items-center justify-center p-6 text-center">
+                    <div class="w-16 h-16 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-500 rounded-full flex items-center justify-center text-3xl mb-4">🔒</div>
+                    <h4 class="text-emerald-600 dark:text-emerald-400 font-bold text-lg">No Mixed Content Found</h4>
+                    <p class="text-slate-500 text-sm mt-2">All resource references explicitly utilize secure HTTPS connections.</p>
+                </div>
+            `;
+        } else {
+            const types = Object.entries(d.byType || {}).filter(([_, count]) => count > 0);
+            content.innerHTML = `
+                <div class="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-900/50 p-4 rounded-lg mb-4">
+                    <h4 class="text-red-700 dark:text-red-400 font-bold flex items-center gap-2 mb-2"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg> Insecure HTTP Resources Detected</h4>
+                    <p class="text-red-600 dark:text-red-300 text-sm">Browsers may block or show warnings for this site because it loads insecure resources over a secure HTTPS connection.</p>
+                </div>
+
+                <div class="grid grid-cols-2 md:grid-cols-3 gap-2 mb-4">
+                    ${types.map(([type, count]) => `
+                        <div class="bg-slate-50 dark:bg-slate-900 p-2 rounded text-center border border-slate-200 dark:border-slate-800">
+                            <div class="text-red-500 font-bold text-lg">${count}</div>
+                            <div class="text-[10px] uppercase text-slate-500">${type}</div>
+                        </div>
+                    `).join('')}
+                </div>
+
+                ${d.examples && d.examples.length ? `
+                    <div class="mt-4 border-t border-slate-200 dark:border-slate-700 pt-4">
+                        <span class="text-xs font-bold text-slate-500 uppercase mb-2 block">Examples of insecure resources:</span>
+                        <ul class="list-disc pl-4 space-y-1 text-xs font-mono text-slate-700 dark:text-slate-300 break-all">
+                            ${d.examples.map(ex => `<li>${ex}</li>`).join('')}
+                        </ul>
+                    </div>
+                ` : ''}
+            `;
+        }
+    }
+
+    if (id === 'crawlerModal' && content) {
+        const rob = currentData.robots || {};
+        const sm = currentData.sitemap || {};
+
+        content.innerHTML = `
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                <div class="bg-slate-50 dark:bg-slate-900 p-4 rounded-lg border border-slate-200 dark:border-slate-800">
+                    <div class="text-xs font-bold uppercase text-slate-500 mb-3 flex items-center gap-2"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg> Robots.txt</div>
+                    ${rob.exists ? `
+                        <div class="space-y-2 text-sm">
+                            <div class="flex justify-between"><span class="text-slate-500">Status:</span> <span class="text-emerald-600 dark:text-emerald-400 font-bold">Present</span></div>
+                            <div class="flex justify-between"><span class="text-slate-500">Access:</span> ${rob.isFullyBlocked ? '<span class="text-red-500 font-bold">Fully Blocked</span>' : '<span class="text-emerald-600 dark:text-emerald-400 font-bold">Allowed</span>'}</div>
+                            <div class="flex justify-between"><span class="text-slate-500">Crawl Delay:</span> <span class="text-slate-800 dark:text-slate-200">${rob.crawlDelay ? `${rob.crawlDelay}s` : 'None'}</span></div>
+                        </div>
+                    ` : `
+                        <div class="text-red-500 text-sm font-bold flex items-center gap-2"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg> Missing</div>
+                        <p class="text-xs text-slate-500 mt-2">Crawlers will assume full access to all paths.</p>
+                    `}
+                </div>
+
+                <div class="bg-slate-50 dark:bg-slate-900 p-4 rounded-lg border border-slate-200 dark:border-slate-800">
+                    <div class="text-xs font-bold uppercase text-slate-500 mb-3 flex items-center gap-2"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"></path></svg> Sitemap</div>
+                    ${sm.exists ? `
+                        <div class="space-y-2 text-sm">
+                            <div class="flex justify-between"><span class="text-slate-500">Status:</span> <span class="text-emerald-600 dark:text-emerald-400 font-bold">Present</span></div>
+                            <div class="flex justify-between"><span class="text-slate-500">Type:</span> <span class="text-slate-800 dark:text-slate-200">${sm.isSitemapIndex ? 'Sitemap Index' : 'Standard Sitemap'}</span></div>
+                            <div class="flex justify-between"><span class="text-slate-500">URLs Found:</span> <span class="text-slate-800 dark:text-slate-200">${sm.urlCount || 0}</span></div>
+                        </div>
+                    ` : `
+                        <div class="text-red-500 text-sm font-bold flex items-center gap-2"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg> Not Found</div>
+                        <p class="text-xs text-slate-500 mt-2">Search engines may have difficulty discovering all pages.</p>
+                    `}
+                </div>
+            </div>
+
+            ${sm.exists && sm.url ? `
+                <div class="mt-2 border-t border-slate-200 dark:border-slate-700 pt-3">
+                    <span class="text-[10px] uppercase text-slate-500 block mb-1">Sitemap Location</span>
+                    <a href="${sm.url}" target="_blank" class="text-xs text-blue-500 hover:underline break-all font-mono">${sm.url}</a>
+                </div>
+            ` : ''}
+        `;
+    }
+
+    if (id === 'a11yModal' && content) {
+        const issues = currentTier2Data.a11yIssues || [];
+        if (issues.length > 0) {
+            let html = '<p class="text-red-600 dark:text-red-400 font-bold text-xs mb-2">Failing Checks:</p>';
+            issues.forEach(iss => {
+                html += `<div class="bg-red-50 dark:bg-red-900/10 p-2 rounded mb-2 border border-red-100 dark:border-red-900/30">
+                    <div class="font-bold text-slate-800 dark:text-slate-200 text-xs">${iss.title}</div>
+                    <div class="text-slate-600 dark:text-slate-400 text-xs mt-1">${iss.description || ''}</div>
+                </div>`;
+            });
+            content.innerHTML = html;
+        } else {
+            content.innerHTML = `<div class="text-emerald-600 dark:text-emerald-400 text-sm flex items-center justify-center gap-2 py-4"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg> Perfect accessibility score! No critical issues found.</div>`;
+        }
+    }
+
+    // Append Raw JSON toggle for all modals (except headers which handles its own)
+    if (id !== 'headersModal' && content) {
+        const keyMap = {
+            'sslModal': 'ssl', 'portsModal': 'ports', 'whoisModal': 'whois',
+            'dnsModal': 'dns', 'cookiesModal': 'cookies', 'redirectsModal': 'redirects',
+            'mixedContentModal': 'mixedContent'
+        };
+
+        let rawData = null;
+        if (id === 'a11yModal') {
+            rawData = currentTier2Data.a11yIssues || [];
+        } else if (id === 'crawlerModal') {
+            rawData = { robots: currentData.robots, sitemap: currentData.sitemap };
+        } else if (keyMap[id]) {
+            rawData = currentData[keyMap[id]];
+        }
+
+        if (rawData) {
+            content.innerHTML += `
+                <div class="mt-4 pt-4 border-t border-slate-200 dark:border-slate-700">
+                    <details>
+                        <summary class="cursor-pointer text-blue-500 text-xs font-bold uppercase tracking-wider select-none">View Raw JSON</summary>
+                        <pre class="mt-2 bg-slate-100 dark:bg-slate-900 p-3 rounded-lg text-xs overflow-auto max-h-64 text-slate-800 dark:text-slate-300 shadow-inner">${JSON.stringify(rawData, null, 2)}</pre>
+                    </details>
+                </div>
+            `;
         }
     }
 
