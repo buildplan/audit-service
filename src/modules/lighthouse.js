@@ -56,14 +56,15 @@ try {
         }
     };
 
-    const techArray = Object.keys(mergedTechnologies).map(key => {
+    const techObject = {};
+    Object.keys(mergedTechnologies).forEach(key => {
         const tech = { ...mergedTechnologies[key], name: key };
         translateToLegacy(tech);
-        return tech;
+        techObject[key] = tech;
     });
 
-    WappalyzerCore.setTechnologies(techArray);
-    logger.info(`[System] Translator complete. ${techArray.length} technologies ready.`);
+    WappalyzerCore.setTechnologies(techObject);
+    logger.info(`[System] Translator complete. ${Object.keys(techObject).length} technologies ready.`);
 } catch (e) {
     logger.error(`[CRITICAL] Translation Failed: ${e.message}`);
 }
