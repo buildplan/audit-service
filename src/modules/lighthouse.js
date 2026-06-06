@@ -481,10 +481,20 @@ async function runDeepScan(domain) {
             || report.fullPageScreenshot?.screenshot?.data
             || null;
 
+        const perfScore = report.categories.performance?.score;
+        const seoScore = report.categories.seo?.score;
+        
+        // If Lighthouse silently failed to score the page but didn't set a runtimeError
+        if (perfScore === null || perfScore === 0 || perfScore === undefined) {
+            const warnings = report.runWarnings ? report.runWarnings.join('; ') : 'No warnings';
+            const auditsMissing = !report.audits || Object.keys(report.audits).length === 0;
+            throw new Error(`Lighthouse silent failure. Score is null. Warnings: ${warnings}. Audits Missing: ${auditsMissing}`);
+        }
+
         return {
             // Category scores
-            performance: (report.categories.performance?.score || 0) * 100,
-            seo: (report.categories.seo?.score || 0) * 100,
+            performance: (perfScore || 0) * 100,
+            seo: (seoScore || 0) * 100,
             accessibility: (report.categories.accessibility?.score || 0) * 100,
             bestPractices: (report.categories['best-practices']?.score || 0) * 100,
 
