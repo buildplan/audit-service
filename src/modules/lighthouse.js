@@ -119,17 +119,19 @@ function extractLighthouseDetails(report) {
     });
 
     // Diagnostics
+    const getAudit = (oldId, newId) => audits[newId] || audits[oldId] || null;
+
     const diagnostics = {
-        domSize: audits['dom-size']?.numericValue || null,
-        domSizeDisplay: audits['dom-size']?.displayValue || null,
-        mainThreadWork: audits['mainthread-work-breakdown']?.numericValue || null,
-        mainThreadDisplay: audits['mainthread-work-breakdown']?.displayValue || null,
-        bootupTime: audits['bootup-time']?.numericValue || null,
-        bootupDisplay: audits['bootup-time']?.displayValue || null,
-        totalByteWeight: audits['total-byte-weight']?.numericValue || null,
-        totalByteDisplay: audits['total-byte-weight']?.displayValue || null,
-        serverResponseTime: audits['server-response-time']?.numericValue || null,
-        serverResponseDisplay: audits['server-response-time']?.displayValue || null,
+        domSize: getAudit('dom-size', 'dom-size-insight')?.numericValue || null,
+        domSizeDisplay: getAudit('dom-size', 'dom-size-insight')?.displayValue || null,
+        mainThreadWork: getAudit('mainthread-work-breakdown', 'mainthread-work-breakdown')?.numericValue || null, // Hasn't changed insight name but safe
+        mainThreadDisplay: getAudit('mainthread-work-breakdown', 'mainthread-work-breakdown')?.displayValue || null,
+        bootupTime: getAudit('bootup-time', 'bootup-time')?.numericValue || null,
+        bootupDisplay: getAudit('bootup-time', 'bootup-time')?.displayValue || null,
+        totalByteWeight: getAudit('total-byte-weight', 'total-byte-weight')?.numericValue || null,
+        totalByteDisplay: getAudit('total-byte-weight', 'total-byte-weight')?.displayValue || null,
+        serverResponseTime: getAudit('server-response-time', 'document-latency-insight')?.numericValue || null,
+        serverResponseDisplay: getAudit('server-response-time', 'document-latency-insight')?.displayValue || null,
         networkRequests: audits['network-requests']?.details?.items?.length || null,
         thirdPartyCount: audits['third-party-summary']?.details?.items?.length || 0,
     };
