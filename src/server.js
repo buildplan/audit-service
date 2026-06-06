@@ -6,12 +6,18 @@ const validator = require('validator');
 const { scanQueue } = require('./queues/scanQueue');
 const logger = require('./utils/logger');
 
-// Modules
+// Modules - Tier 1
 const { checkSSL } = require('./modules/ssl');
 const { checkHeaders } = require('./modules/headers');
 const { checkPorts } = require('./modules/ports');
 const { estimateCarbon } = require('./modules/carbon');
 const { checkDNS } = require('./modules/dns');
+const { checkCookies } = require('./modules/cookies');
+const { checkRedirects } = require('./modules/redirects');
+const { checkRobots } = require('./modules/robots');
+const { checkSitemap } = require('./modules/sitemap');
+const { checkWhois } = require('./modules/whois');
+const { checkMixedContent } = require('./modules/mixed-content');
 
 const app = express();
 
@@ -70,6 +76,27 @@ const withTimeout = (promise, ms, name) => {
         });
 };
 
+// [ENDPOINT] Health Check
+app.get('/api/health', async (req, res) => {
+    try {
+        const counts = await scanQueue.getJobCounts('active', 'waiting', 'completed', 'failed');
+        res.json({
+            status: 'healthy',
+            uptime: Math.floor(process.uptime()),
+            queue: {
+                active: counts.active || 0,
+                waiting: counts.waiting || 0,
+                completed: counts.completed || 0,
+                failed: counts.failed || 0,
+            },
+            version: require('../package.json').version,
+            timestamp: new Date().toISOString(),
+        });
+    } catch (error) {
+        res.status(503).json({ status: 'unhealthy', error: error.message });
+    }
+});
+
 // [ENDPOINT 1] Light Scan - Always available (Tier 1)
 app.post('/api/scan', async (req, res) => {
     let { domain } = req.body;
@@ -81,13 +108,19 @@ app.post('/api/scan', async (req, res) => {
     try {
         logger.info(`Starting Tier 1 scan for: ${domain}`);
 
-        // Run Checks (Parallel)
+        // Run All Checks (Parallel)
         const results = await Promise.allSettled([
-            withTimeout(checkSSL(domain), 5000, 'SSL'),
+            withTimeout(checkSSL(domain), 8000, 'SSL'),
             withTimeout(checkHeaders(domain), 5000, 'Headers'),
-            withTimeout(checkPorts(domain), 8000, 'Ports'),
+            withTimeout(checkPorts(domain), 10000, 'Ports'),
             withTimeout(estimateCarbon(domain), 5000, 'Carbon'),
-            withTimeout(checkDNS(domain), 5000, 'DNS')
+            withTimeout(checkDNS(domain), 8000, 'DNS'),
+            withTimeout(checkCookies(domain), 6000, 'Cookies'),
+            withTimeout(checkRedirects(domain), 12000, 'Redirects'),
+            withTimeout(checkRobots(domain), 5000, 'Robots'),
+            withTimeout(checkSitemap(domain), 5000, 'Sitemap'),
+            withTimeout(checkWhois(domain), 6000, 'Whois'),
+            withTimeout(checkMixedContent(domain), 6000, 'MixedContent'),
         ]);
 
         const unwrap = (res) => res.status === 'fulfilled' ? res.value : { error: 'Check failed' };
@@ -98,7 +131,13 @@ app.post('/api/scan', async (req, res) => {
                 headers: unwrap(results[1]),
                 ports: unwrap(results[2]),
                 carbon: unwrap(results[3]),
-                dns: unwrap(results[4])
+                dns: unwrap(results[4]),
+                cookies: unwrap(results[5]),
+                redirects: unwrap(results[6]),
+                robots: unwrap(results[7]),
+                sitemap: unwrap(results[8]),
+                whois: unwrap(results[9]),
+                mixedContent: unwrap(results[10]),
             }
         });
 
