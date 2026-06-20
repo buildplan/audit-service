@@ -11,15 +11,15 @@
   },
   "dependencies": {
     "@tgwf/co2": "^0.18.0",
-    "axios": "^1.17.0",
-    "bullmq": "^5.78.0",
+    "axios": "^1.18.0",
+    "bullmq": "^5.79.0",
     "chrome-launcher": "^1.2.1",
     "cors": "^2.8.6",
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
     "express-rate-limit": "^8.5.2",
     "ioredis": "^5.11.1",
-    "lighthouse": "^13.3.0",
+    "lighthouse": "^13.4.0",
     "puppeteer-core": "^25.1.0",
     "validator": "^13.15.35"
   },
