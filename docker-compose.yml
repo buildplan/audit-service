@@ -15,6 +15,7 @@ services:
       - REDIS_HOST=valkey
       - LOG_LEVEL=info
       - CORS_ORIGIN=*
+      - GWF_API_KEY=${GWF_API_KEY}
     depends_on:
       valkey:
         condition: service_healthy
