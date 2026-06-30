@@ -156,6 +156,8 @@ REDIS_HOST=valkey
 REDIS_PORT=6379
 # Concurrent scans per worker
 CONCURRENCY=2
+# Green Web Foundation API Key for carbon.txt lookups
+GWF_API_KEY=your-api-key
 ```
 
 ## Docker Configuration
