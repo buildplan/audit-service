@@ -20,7 +20,7 @@
     "express-rate-limit": "^8.7.0",
     "ioredis": "^6.0.0",
     "lighthouse": "^13.4.1",
-    "puppeteer-core": "^25.9.0",
+    "puppeteer-core": "^25.10.0",
     "validator": "^13.15.35"
   },
   "overrides": {
