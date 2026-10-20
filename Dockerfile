@@ -1,12 +1,12 @@
 # [Stage 1] Builder
-FROM node:26-bookworm-slim AS builder
+FROM node:26-bookworm-slim@sha256:298992629d69bbd5b2b03ad57094d8e4fcb3a8eeb7c4e25d29de656519568913 AS builder
 WORKDIR /app
 COPY package*.json ./
 RUN npm ci
 COPY . .
 
 # [Stage 2] Web Server
-FROM node:26-bookworm-slim AS web
+FROM node:26-bookworm-slim@sha256:298992629d69bbd5b2b03ad57094d8e4fcb3a8eeb7c4e25d29de656519568913 AS web
 WORKDIR /app
 RUN apt-get update && apt-get install -y dumb-init --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
@@ -18,7 +18,7 @@ ENTRYPOINT ["/usr/bin/dumb-init", "--"]
 CMD ["node", "src/server.js"]
 
 # [Stage 3] Worker
-FROM node:26-bookworm-slim AS worker
+FROM node:26-bookworm-slim@sha256:298992629d69bbd5b2b03ad57094d8e4fcb3a8eeb7c4e25d29de656519568913 AS worker
 WORKDIR /app
 
 # Install Chromium
